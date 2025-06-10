@@ -29,8 +29,8 @@
             <!-- Adresses et localisation -->
             <div class="col-md-4 mb-4">
                 <h5>Nos adresses</h5>
-                <p>123 Rue Exemple, Ville, Pays</p>
-                <p>456 Avenue Exemple, Ville, Pays</p>
+                <p>04 Rue Damas, La Goulette, Tunisie</p>
+                <p>09 Avenue la liberté, Tunis, Tunisie</p>
                 <p><strong>Localisation :</strong> <a href="https://www.google.com/maps" target="_blank" class="text-white">Voir sur Google Maps</a></p>
             </div>
 

@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php 
+session_start();
+// Check if the user is logged in, if not redirect to login page
+if(isset($_SESSION['visiteur_nom'])){
+    header('location:profile.php');
+    exit;
+}
+
 include_once 'inc/functions.php';
 $categories = getAllCategories(); 
 $showRegistrationAlert = false;
@@ -23,6 +30,14 @@ if (!empty($_POST)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .required-star {
+  color: red;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+    </style>
 </head>
 <body>
 
@@ -32,24 +47,40 @@ if (!empty($_POST)) {
     <h2 class="text-center mb-4">Formulaire d'inscription</h2>
     <form action="register.php" method="POST">
         <div class="mb-3">
-            <label for="nom" class="form-label">Nom</label>
+            <label for="nom" class="form-label"><span class="required-star">*</span>Nom</label>
             <input type="text" class="form-control" id="nom" name="nom" required>
         </div>
         <div class="mb-3">
-            <label for="prenom" class="form-label">Prénom</label>
+            <label for="prenom" class="form-label"><span class="required-star">*</span>Prénom</label>
             <input type="text" class="form-control" id="prenom" name="prenom" required>
         </div>
         <div class="mb-3">
-            <label for="telephone" class="form-label">Numéro de téléphone</label>
-            <input type="tel" class="form-control" id="telephone" name="telephone">
-            <div class="form-text">Exemple : +216 22 178 962</div>
+            <label for="telephone" class="form-label"><span class="required-star">*</span>Numéro de téléphone</label>
+            <input type="tel" class="form-control" id="telephone" name="telephone" maxlength="8" pattern="\d{8}" required>
+            <div class="form-text">Exemple : 22 178 962</div>
         </div>
         <div class="mb-3">
-            <label for="email" class="form-label">Adresse email</label>
+            <label for="email" class="form-label"><span class="required-star">*</span>Adresse email</label>
             <input type="email" class="form-control" id="email" name="email" required>
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">Mot de passe</label>
+            <label for="adresse" class="form-label"><span class="required-star">*</span>Adresse</label>
+            <input type="text" class="form-control" id="adresse" name="adresse" required>
+        </div>
+        <div class="mb-3">
+            <label for="code_postal" class="form-label"><span class="required-star">*</span>Code postal</label>
+            <input type="text" class="form-control" id="code_postal" name="code_postal" required>
+        </div>
+        <div class="mb-3">
+            <label for="ville" class="form-label"><span class="required-star">*</span>Ville</label>
+            <input type="text" class="form-control" id="ville" name="ville" required>
+        </div>
+        <div class="mb-3">
+            <label for="code_carte" class="form-label"> Code Carte</label>
+            <input type="password" class="form-control" id="code_carte" name="code_carte" maxlength="8" pattern="\d{8}" >
+            </div>
+        <div class="mb-3">
+            <label for="password" class="form-label"><span class="required-star">*</span>Mot de passe</label>
             <input type="password" class="form-control" id="password" name="mp" required>
         </div>
         <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
@@ -68,7 +99,7 @@ if (!empty($_POST)) {
         Votre compte a été créé avec succès !
       </div>
       <div class="modal-footer">
-        <a href="login.php" class="btn btn-primary">Se connecter</a>
+        <a href="connexion.php" class="btn btn-primary">Se connecter</a>
       </div>
     </div>
   </div>

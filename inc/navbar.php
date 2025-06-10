@@ -1,59 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+require_once 'inc/functions.php';
+
+$nombre_articles = 0;
+
+if (isset($_SESSION['visiteur_id'])) {
+    $conn = connect();
+    $visiteur_id = $_SESSION['visiteur_id'];
+
+    // Récupérer le panier actif
+    $stmt = $conn->prepare("SELECT id FROM panier WHERE visiteur_id = :visiteur_id AND statut = 'actif' LIMIT 1");
+    $stmt->execute([':visiteur_id' => $visiteur_id]);
+    $panier = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($panier) {
+        $panier_id = $panier['id'];
+
+        // Compter le nombre total d'articles dans le panier
+        $stmt = $conn->prepare("SELECT SUM(quantite) AS total FROM commande WHERE panier = :panier_id");
+        $stmt->execute([':panier_id' => $panier_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $nombre_articles = $result['total'] ?? 0;
+    }
+}
+?>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
- 
+  <link rel="stylesheet" href="../css/navbar.css"> 
 </head>
-<?php include_once 'functions.php';
+
+
+<div id="header">
+    <nav class="top-navbar">
+ 
+  <div class="navbar-right">
+    <ul class="navbar-right-list">
+    <?php if (!isset($_SESSION['visiteur_id'])): ?>
+      <li> <a href="connexion.php">Sign In</a></li>
+            <?php endif; ?>  
+    <?php if (isset($_SESSION['visiteur_id'])): ?>
+      <li><a href="deconnexion.php">Sign Out</a></li>
+    <?php endif; ?>
+    </ul>
+  </div>
+</nav>
+    </div>
+
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid navbar-sections">
+    <!-- Logo -->
+    <div class="navbar-left">
+    <a href="index.php"><img src="images/vibesport.png" alt="" class="logo"></a>
+  </div>
+
     
+    <!-- Toggle button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  ?>
-<body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img src="images/logo.png" alt="Logo" style="height: 90px; border-radius: 50%;">
+    <!-- Menu -->
+    <div class="collapse navbar-collapse center-elements" id="navbarContent">
+  <ul class="navbar-nav mx-auto">
+
+    <!-- HOMME -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" href="homme.php">Homme</a>
+      <!-- <ul class="dropdown-menu animate-slide">
+        
+   
+      </ul> -->
+    </li>
+
+    <!-- FEMME -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" href="femme.php">Femme</a>
+      <!-- <ul class="dropdown-menu animate-slide">
+        <li><a class="dropdown-item" href="#"><i class="bi bi-gender-female me-2"></i>Brassières</a></li>
+        <li><a class="dropdown-item" href="#"><i class="bi bi-body-text me-2"></i>Leggings</a></li>
+      </ul> -->
+    </li>
+
+    <!-- ENFANT -->
+    <li class="nav-item dropdown">
+      <a class="nav-link" href="kids.php">Enfant</a>
+      <!-- <ul class="dropdown-menu animate-slide">
+        <li><a class="dropdown-item" href="#"><i class="bi bi-emoji-smile me-2"></i>Garçons</a></li>
+        <li><a class="dropdown-item" href="#"><i class="bi bi-emoji-laughing me-2"></i>Filles</a></li>
+      </ul> -->
+    </li>
+
+
+
+  </ul>
+</div>
+
+
+      <!-- Panier -->
+      <div class="nav-item position-relative ms-3">
+        <a class="nav-link" href="panier.php">
+          <i class="bi bi-cart me-2"></i> Panier
+        <?php if ($nombre_articles > 0): ?>
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    <?= $nombre_articles ?>
+  </span>
+<?php endif; ?>
+
+
         </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            
-             
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Categories
-                </a>
-                <ul class="dropdown-menu">
-                  <?php
-                  foreach ($categories as $categorie) {
-                      echo '<li><a class="dropdown-item" href="#">' . htmlspecialchars($categorie['nom']) . '</a></li>';
-                      echo '<li><hr class="dropdown-divider"></li>';
-                  }
-                  ?>
-                </ul>
-              </li>
+      </div>
 
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="" href="connexion.php">Connexion</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="register.php">register</a>
-              </li>
-             
-            </ul>
-            <form class="d-flex" role="search" action="index.php" method="POST">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>.
 
-</html>
+
+      <!-- Favoris -->
+
+      <div class="nav-item position-relative ms-3">
+    <a class="nav-link" href="mes_favoris.php">
+      <i class="bi bi-heart me-2"></i> Mes Favoris
+    </a>
+  </div>
+
+      <!-- Right: Avatar & Panier -->
+    <div class="right-elements d-flex align-items-center">
+      <!-- Avatar -->
+      <div class="nav-item position-relative ms-3">
+        <a class="nav-link" href="profile.php">
+           <?php if (isset($_SESSION['visiteur_id'])): ?>
+            <i class="bi bi-person-circle me-2"></i>
+          <?= htmlspecialchars($_SESSION['visiteur_prenom']); ?>
+        <?php endif; ?>
+        </a>
+      </div>
+
+
+
+    </div>
+
+  </div>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+
